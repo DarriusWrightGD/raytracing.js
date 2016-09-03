@@ -34,10 +34,14 @@ class vec3 {
     }
 
     length(){
-        return Math.sqrt(this.x * this.x + this.y * this.y, this.z * this.z);
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
     squaredLength(){
-        return this.x * this.x + this.y * this.y, this.z * this.z;
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
+    getNormalized(){
+        return this.multiply(1.0/this.length());
     }
 }
 
