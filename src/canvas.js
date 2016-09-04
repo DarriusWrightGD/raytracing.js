@@ -1,33 +1,18 @@
-var vec3 = require('./math/vec3');
-var ray = require('./math/ray');
-
+const vec3 = require('./math/vec3');
+const ray = require('./math/ray');
+const Sphere = require('./objects/sphere');
+const HitRecord = require('./objects/hitRecord');
+const World = require('./objects/world');
+const Camera = require('./camera/camera');
 
 let width = 500;
 let height = 300;
-
-class Sphere{
-    constructor(center, radius, color){
-        this.center = center || vec3(0,0,0);
-        this.radius = radius || 1.0;
-        this.color = color || new vec3(1,0,0);
-    }
-
-    hit(ray){
-        let originToCenter = ray.origin.subtract(this.center);
-
-        let a = ray.direction.dot(ray.direction);
-        let b = 2.0 * originToCenter.dot(ray.direction);
-        let c = originToCenter.dot(originToCenter) - this.radius * this.radius;
-        let discriminant = b * b - 4 * a * c;
-        
-        return discriminant > 0;
-    }
-}
 
 // width = 10;
 // height = 4;
 
 let imageData;
+
 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext("2d");
@@ -64,30 +49,34 @@ function setPixel(x,y,r,g,b){
     imageData.data[pixel +3] = 255;
 }
 
-function colorRay(ray, sphere){
-    if(sphere.hit(ray)){
-        return new vec3(1,0,0);
+
+
+function colorRay(ray, world){
+    let hitRecord = world.hit(ray, 0, Number.MAX_VALUE);
+    if(hitRecord.hit){
+        let normal = hitRecord.normal;
+        return new vec3(normal.x +1, normal.y +1, normal.z + 1).multiply(0.5);
     }
 
     let direction = ray.direction.getNormalized();
-    let t = 0.5 * (direction.y + 1.0);
+    t = 0.5 * (direction.y + 1.0);
     return new vec3(1,1,1).multiply(1.0-t).add(new vec3(0.5,0.7,1.0).multiply(t));
 }
 
 function draw(){
-    const lowerLeftCorner = new vec3(-2.0,-1.0,-1.0);
-    const horizontal = new vec3(4.0,0.0,0.0);
-    const vertical = new vec3(0.0, 2.0, 0.0);
-    const origin = new vec3(0.0,0.0,0.0);
-    const sphere = new Sphere(new vec3(0,0,-1), 0.5);
-    for(let y = height -1; y >= 0; y--){
+    const camera = new Camera();
+    const sampleCount = 8;
+    const world = new World([new Sphere(new vec3(0,0,-1), 0.5), new Sphere(new vec3(0,-100.5,-1), 100) ]);
+    for(let y = height; y >= 0; y--){
         for(let x = 0; x < width; x++){
-            let u = x/width, v = y/height;
-
-            let cameraRay = new ray(origin, lowerLeftCorner.add(horizontal.multiply(u)).add(vertical.multiply(v)));
-            let color = colorRay(cameraRay, sphere).multiply(255.99).floor();
-
-            setPixel(x,y,color.x, color.y, color.z);
+            let color = new vec3(0,0,0);
+            for(let s = 0; s < sampleCount; s++){
+                let u = (x + Math.random())/width, v = (y + Math.random())/height;
+                let cameraRay = camera.getRay(u,v)
+                color = color.add(colorRay(cameraRay, world));
+            }
+            color = color.multiply(1/sampleCount).multiply(255.99).floor();
+            setPixel(x,height - y,color.x, color.y, color.z);
         }
     }
     context.putImageData( imageData, 0, 0 );     
