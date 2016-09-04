@@ -49,23 +49,31 @@ function setPixel(x,y,r,g,b){
     imageData.data[pixel +3] = 255;
 }
 
+function randomInUnitSphere(){
+    let point;
+    do{
+        point = new vec3(Math.random(), Math.random(), Math.random()).multiply(2.0).subtract(new vec3(1,1,1));
+    }while(point.dot(point) >= 1.0);
+    return point;
+}
 
-
-function colorRay(ray, world){
-    let hitRecord = world.hit(ray, 0, Number.MAX_VALUE);
+function colorRay(r, world){
+    let hitRecord = world.hit(r, 0, Number.MAX_VALUE);
     if(hitRecord.hit){
-        let normal = hitRecord.normal;
-        return new vec3(normal.x +1, normal.y +1, normal.z + 1).multiply(0.5);
+        let target = hitRecord.hitPosition.add(hitRecord.normal).add(randomInUnitSphere());
+        return colorRay(new ray(hitRecord.hitPosition, target.subtract(hitRecord.hitPosition)),world).multiply(0.5);
+    }
+    else{
+        let direction = r.direction.getNormalized();
+        let t = 0.5 * (direction.y + 1.0);
+        return new vec3(1,1,1).multiply(1.0-t).add(new vec3(0.5,0.7,1.0).multiply(t));
     }
 
-    let direction = ray.direction.getNormalized();
-    t = 0.5 * (direction.y + 1.0);
-    return new vec3(1,1,1).multiply(1.0-t).add(new vec3(0.5,0.7,1.0).multiply(t));
 }
 
 function draw(){
     const camera = new Camera();
-    const sampleCount = 8;
+    const sampleCount = 30;
     const world = new World([new Sphere(new vec3(0,0,-1), 0.5), new Sphere(new vec3(0,-100.5,-1), 100) ]);
     for(let y = height; y >= 0; y--){
         for(let x = 0; x < width; x++){
@@ -75,7 +83,9 @@ function draw(){
                 let cameraRay = camera.getRay(u,v)
                 color = color.add(colorRay(cameraRay, world));
             }
-            color = color.multiply(1/sampleCount).multiply(255.99).floor();
+            color = color.multiply(1/sampleCount);
+            color = new vec3(Math.sqrt(color.x),Math.sqrt(color.y),Math.sqrt(color.z));
+            color = color.multiply(255.99).floor();
             setPixel(x,height - y,color.x, color.y, color.z);
         }
     }
