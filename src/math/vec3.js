@@ -6,6 +6,9 @@ class vec3 {
     }
 
     add(rhs){
+        if(!rhs){
+            console.log('failure')
+        }
         return new vec3(this.x + rhs.x, this.y + rhs.y, this.z + rhs.z);
     }
 
@@ -15,6 +18,10 @@ class vec3 {
 
     multiply(num){
         return new vec3(this.x * num,this.y * num,this.z * num);
+    }
+
+    mix(rhs){
+        return new vec3(this.x * rhs.x,this.y * rhs.y,this.z * rhs.z);        
     }
 
     dot(rhs){
@@ -27,6 +34,10 @@ class vec3 {
             this.x * rhs.y - this.y * rhs.x,
             this.z * rhs.x - this.x * rhs.z
         );
+    }
+
+    reflect(rhs){
+        return this.subtract( rhs.multiply(2.0 * this.dot(rhs)));
     }
 
     floor(){

@@ -10,7 +10,10 @@ class Camera {
     }
 
     getRay(u,v){
-        return new ray(this.origin, this.lowerLeftCorner.add(this.horizontal.multiply(u)).add(this.vertical.multiply(v)));
+        return new ray(this.origin, this.lowerLeftCorner
+        .add(this.horizontal.multiply(u))
+        .add(this.vertical.multiply(v))
+        .subtract(this.origin));
     }
 }
 

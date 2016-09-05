@@ -3,7 +3,7 @@ require('./vec3');
 class ray{
     constructor(origin, direction){
         this.origin = origin || new vec3(0,0,0);
-        this.direction = direction || new vec3(0,1,10);
+        this.direction = direction || new vec3(0,1,0);
     }
 
     point(t){
