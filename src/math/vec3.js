@@ -6,9 +6,6 @@ class vec3 {
     }
 
     add(rhs){
-        if(!rhs){
-            console.log('failure')
-        }
         return new vec3(this.x + rhs.x, this.y + rhs.y, this.z + rhs.z);
     }
 
@@ -36,6 +33,17 @@ class vec3 {
         );
     }
 
+    refract(normal, niOverNt){
+        let uv = this.getNormalized();
+        let dt = uv.dot(normal);
+        let discriminant = 1.0 - niOverNt * niOverNt * (1-dt*dt);
+        if(discriminant > 0){
+            return this.subtract(normal.multiply(dt))
+            .multiply(niOverNt)
+            .subtract(normal.multiply(Math.sqrt(discriminant)));
+        }
+    }
+
     reflect(rhs){
         return this.subtract( rhs.multiply(2.0 * this.dot(rhs)));
     }
@@ -53,6 +61,12 @@ class vec3 {
 
     getNormalized(){
         return this.multiply(1.0/this.length());
+    }
+
+    updateFromJson(object){
+        this.x = object.x;
+        this.y = object.y;
+        this.z = object.z;
     }
 }
 

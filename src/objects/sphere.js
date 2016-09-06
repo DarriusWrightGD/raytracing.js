@@ -7,7 +7,7 @@ const Material = require('./materials/material')
 class Sphere extends Hitable{
     constructor(center, radius, material){
         super();
-        this.center = center || vec3(0,0,0);
+        this.center = center || new vec3(0,0,0);
         this.radius = radius || 1.0;
         this.material = material || new Material();
     }
@@ -34,9 +34,17 @@ class Sphere extends Hitable{
         return new HitRecord();
     }
 
+    updateFromJson(object){
+        this.center= object.center;
+        this.radius = object.radius;
+        this.material.updateFromJson(object.material)
+    }
+
     calculateHitRecord(t, hitPosition){
         return new HitRecord(true, t,hitPosition.subtract(this.center).multiply(1/this.radius),hitPosition, this.material)
     }
 };
+
+
 
 module.exports = Sphere;

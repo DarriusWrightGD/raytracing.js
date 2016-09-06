@@ -1,4 +1,4 @@
-require('./vec3');
+const vec3 = require('./vec3');
 
 class ray{
     constructor(origin, direction){

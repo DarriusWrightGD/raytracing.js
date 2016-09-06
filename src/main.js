@@ -1,4 +1,5 @@
 const electron = require('electron');
+const ipc = electron.ipcMain;
 
 const {app, BrowserWindow} = electron;
 require('electron-reload')(__dirname, {
@@ -30,3 +31,15 @@ app.on('window-all-closed', ()=>{
 app.on('activate', ()=>{
     if(mainWindow === null) createWindow();
 });
+
+ipc.on('world-changed', (event, worldChanged)=>{
+    mainWindow.webContents.send('world-changed', worldChanged)
+})
+
+ipc.on('object-selected', (event, objectSelected)=>{
+    mainWindow.webContents.send('object-selected', objectSelected)
+})
+
+ipc.on('update-object', (event, updateObject)=>{
+    mainWindow.webContents.send('update-object', updateObject);
+})

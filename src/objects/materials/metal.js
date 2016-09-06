@@ -10,6 +10,11 @@ class Metal extends Material {
         this.setFuzzy(f);
     }
 
+    updateFromJson(object){
+        this.albedo.updateFromJson(object.albedo);
+        this.fuzzy = object.fuzzy;
+    }
+
     setFuzzy(f){
         this.fuzzy = (f < 1) ? f : 1;
     }

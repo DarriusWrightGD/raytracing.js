@@ -1,8 +1,29 @@
 <html>
+    <head>
+        <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <script>window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');</script>
+        <script src="../node_modules/tether/dist/js/tether.min.js"></script>
+        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    </head>
     <body>
-        <canvas id='canvas'>
-            browser doesn't support canvas
-        </canvas>
+        <div class='row'>
+            <ul id='objects' class="list-group col-sm-12 col-md-4">
+                <li class="list-group-item">Sphere 1</li>
+                <li class="list-group-item">Sphere 1</li>
+                <li class="list-group-item">Sphere 1</li>
+            </ul>
+            <div class="col-sm-12 col-md-4">
+                <canvas id='canvas' >
+                    browser doesn't support canvas
+                </canvas>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div id="object-details">
+                </div>                
+            <div>
+        </div>
+        <script>require('./objectsList.js')</script>
+        <script>require('./objectDetails.js')</script>
         <script>require('./canvas.js')</script>
     </body>
 </html>

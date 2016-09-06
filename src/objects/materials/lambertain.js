@@ -10,6 +10,10 @@ class Lambertain extends Material{
         this.albedo = albedo || new vec3();
     }
 
+    updateFromJson(object){
+        this.albedo.updateFromJson(object.albedo);
+    }
+
     scatter(rayIn, hitRecord) {
         let target = hitRecord.hitPosition.add(hitRecord.normal).add(Random.randomInUnitSphere());
         let scatteredRay = new ray(hitRecord.hitPosition, target.subtract(hitRecord.hitPosition))
