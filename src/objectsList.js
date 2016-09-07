@@ -14,6 +14,6 @@ window.objectSelected = (id)=>{
 ipc.on('world-changed', (event, world)=>{
     let html = '';
     worldObjects = world;
-    world.hitables.forEach(o=> html += `<li class="list-group-item" id='object-${o.id}' onclick='objectSelected(${o.id})'>${o.constructor.name} ${o.id}</li>`)
+    world.hitables.forEach(o=> html += `<li class="list-group-item" id='object-${o.id}' onclick='objectSelected(${o.id})'>${o.name}</li>`)
     objectList.innerHTML = html; 
 });

@@ -2,6 +2,7 @@ const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
 const vec3 = require('./math/vec3');
+const Random = require('./math/random');
 const ray = require('./math/ray');
 const Sphere = require('./objects/sphere');
 const HitRecord = require('./objects/hitRecord');
@@ -14,21 +15,16 @@ const Dielectric = require('./objects/materials/dielectric');
 let width = 400;
 let height = 300;
 
-const MAX_DEPTH = 20;
-const SAMPLE_COUNT = 20;
+const MAX_DEPTH = 50;
+const SAMPLE_COUNT = 5;
 
-width = 200;
-height = 100;
+width = 300;
+height = 150;
 
 let imageData;
 
-const world = new World([
-    new Sphere(new vec3(0,0,-1), 0.5, new Lambertain(new vec3(0.1,0.2,0.5))), 
-    new Sphere(new vec3(0,-100.5,-1), 100,new Lambertain(new vec3(0.8,0.8,0.0))),
-    new Sphere(new vec3(1,0,-1), 0.5,new Metal(new vec3(0.8,0.6,0.2),0.0)),
-    new Sphere(new vec3(-1,0,-1), 0.5,new Dielectric(1.5)),
-    new Sphere(new vec3(-1,0,-1), -0.45,new Dielectric(1.5)),
-]);
+let world;
+randomScene();
 ipc.send('world-changed', world);
 
 
@@ -81,8 +77,33 @@ function colorRay(r, world, depth){
 
 }
 
+function randomScene(){
+    let hitables = new Array(500);
+    hitables[0] = new Sphere(new vec3(0,-1000, 0), 1000 , new Lambertain(new vec3(0.5,0.5,0.5)));
+    let i = 1;
+    for(let a = 0; a < 2; a++){
+        for(let b = 0; b < 2; b++){
+            let materialChoice = Math.random();
+            let center = new vec3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random() )
+            if(materialChoice < 0.6){
+                hitables[i++] = new Sphere(center, 0.2, new Lambertain(Random.randomVector()));
+            }else if (materialChoice < 0.95){
+                hitables[i++] = new Sphere(center, 0.2, new Metal(Random.randomVector()));
+            }else{
+                hitables[i++] = new Sphere(center, 0.2, new Dielectric(1.5));
+            }
+        }        
+    }
+    world = new World(hitables);
+}
+
 function draw(){
-    const camera = new Camera(75, width/height);
+    const lookFrom = new vec3(7,7,4);
+    const lookAt = new vec3(0,0,-1);
+    const camera = new Camera(lookFrom, lookAt, 
+        new vec3(0,1,0), 20, width/height, 
+        0.2, lookFrom.subtract(lookAt).length());
+        
     const sampleCount = SAMPLE_COUNT;
     const start = new Date().getTime();
     
@@ -100,7 +121,8 @@ function draw(){
             setPixel(x,height - y,color);
         }
     }
-    context.putImageData( imageData, 0, 0 ); 
+    
+    context.putImageData( imageData, 0, 0 );     
 
     let stop = new Date().getTime();
     let time = stop-start;

@@ -17,6 +17,10 @@ class vec3 {
         return new vec3(this.x * num,this.y * num,this.z * num);
     }
 
+    divide(num){
+        return this.multiply(1/num);
+    }
+
     mix(rhs){
         return new vec3(this.x * rhs.x,this.y * rhs.y,this.z * rhs.z);        
     }
@@ -28,8 +32,8 @@ class vec3 {
     cross(rhs){
         return new vec3(
             this.y * rhs.z - this.z * rhs.y,
-            this.x * rhs.y - this.y * rhs.x,
-            this.z * rhs.x - this.x * rhs.z
+            this.z * rhs.x - this.x * rhs.z,
+            this.x * rhs.y - this.y * rhs.x
         );
     }
 
